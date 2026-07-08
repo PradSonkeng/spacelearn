@@ -1,0 +1,305 @@
+/* =========================================================
+   SPACELEARN - STYLE PRINCIPAL
+   ========================================================= */
+
+:root {
+    --nl-primary: #4361ee;
+    --nl-primary-dark: #3730a3;
+    --nl-secondary: #4cc9f0;
+    --nl-accent: #f72585;
+    --nl-success: #2dd4bf;
+    --nl-warning: #ffb703;
+
+    --nl-bg: #f5f7fb;
+    --nl-surface: #ffffff;
+    --nl-text: #1f2937;
+    --nl-text-muted: #6b7280;
+    --nl-border: #e5e7eb;
+    --nl-sidebar-bg: #161a2b;
+    --nl-sidebar-text: #c9ccdb;
+    --nl-sidebar-active: #4361ee;
+}
+
+[data-theme="dark"] {
+    --nl-bg: #0f1117;
+    --nl-surface: #1a1d2b;
+    --nl-text: #e5e7eb;
+    --nl-text-muted: #9ca3af;
+    --nl-border: #2a2e3f;
+    --nl-sidebar-bg: #0b0d16;
+    --nl-sidebar-text: #c9ccdb;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    background-color: var(--nl-bg);
+    color: var(--nl-text);
+    font-family: 'Poppins', 'Segoe UI', Roboto, sans-serif;
+    transition: background-color .25s ease, color .25s ease;
+}
+
+a { text-decoration: none; }
+
+/* ---------------------------------------------------------
+   LAYOUT GÉNÉRAL (sidebar + contenu)
+   --------------------------------------------------------- */
+.nl-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
+.nl-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    background: var(--nl-sidebar-bg);
+    color: var(--nl-sidebar-text);
+    position: fixed;
+	left: 0;
+	height: 100vh;
+    transition: transform .25s ease;
+    z-index: 1030;
+}
+
+.nl-sidebar .brand {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: #fff;
+    padding: 1.4rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.nl-sidebar .brand i { color: var(--nl-secondary); }
+
+.nl-sidebar .nav-link {
+    color: var(--nl-sidebar-text);
+    padding: .7rem 1.5rem;
+    border-radius: 0;
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    font-size: .94rem;
+    border-left: 3px solid transparent;
+    transition: all .15s ease;
+}
+
+.nl-sidebar .nav-link i { width: 20px; text-align: center; }
+
+.nl-sidebar .nav-link:hover {
+    background: rgba(255,255,255,.05);
+    color: #fff;
+}
+
+.nl-sidebar .nav-link.active {
+    background: rgba(67,97,238,.18);
+    color: #fff;
+    border-left-color: var(--nl-primary);
+    font-weight: 600;
+}
+
+.nl-sidebar .sidebar-section {
+    text-transform: uppercase;
+    font-size: .7rem;
+    letter-spacing: .08em;
+    color: #6b7280;
+    padding: 1.2rem 1.5rem .4rem;
+}
+
+.nl-content {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.nl-topbar {
+    background: var(--nl-surface);
+    border-bottom: 1px solid var(--nl-border);
+    padding: .7rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+}
+
+.nl-main {
+    padding: 1.75rem;
+    flex: 1;
+}
+
+/* ---------------------------------------------------------
+   CARTES & COMPOSANTS
+   --------------------------------------------------------- */
+.nl-card {
+    background: var(--nl-surface);
+    border: 1px solid var(--nl-border);
+    border-radius: .9rem;
+    transition: box-shadow .2s ease, transform .2s ease;
+}
+
+.nl-card:hover { box-shadow: 0 .5rem 1.5rem rgba(0,0,0,.06); }
+
+.nl-stat-card {
+    border-radius: 1rem;
+    padding: 1.25rem;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+}
+
+.nl-stat-card i.bg-icon {
+    position: absolute;
+    right: -10px;
+    bottom: -15px;
+    font-size: 4.5rem;
+    opacity: .18;
+}
+
+.nl-stat-card.bg-1 { background: linear-gradient(135deg, #4361ee, #3a0ca3); }
+.nl-stat-card.bg-2 { background: linear-gradient(135deg, #4cc9f0, #4361ee); }
+.nl-stat-card.bg-3 { background: linear-gradient(135deg, #f72585, #b5179e); }
+.nl-stat-card.bg-4 { background: linear-gradient(135deg, #2dd4bf, #0ea5e9); }
+
+.nl-course-cover {
+    height: 150px;
+    object-fit: cover;
+    border-radius: .9rem .9rem 0 0;
+    width: 100%;
+    background: linear-gradient(135deg, #4361ee, #4cc9f0);
+}
+
+.nl-badge-type {
+    position: absolute;
+    top: .6rem;
+    right: .6rem;
+}
+
+.nl-progress-ring {
+    width: 56px;
+    height: 56px;
+}
+
+/* Barre de progression */
+.progress { background-color: var(--nl-border); }
+
+/* ---------------------------------------------------------
+   PAGE D'AUTHENTIFICATION / LANDING
+   --------------------------------------------------------- */
+.nl-auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--nl-primary-dark), var(--nl-primary) 60%, var(--nl-secondary));
+    padding: 1.5rem;
+}
+
+.nl-auth-card {
+    background: var(--nl-surface);
+    border-radius: 1.25rem;
+    overflow: hidden;
+    max-width: 950px;
+    width: 100%;
+    box-shadow: 0 1.5rem 4rem rgba(0,0,0,.25);
+}
+
+.nl-auth-side {
+    background: linear-gradient(160deg, var(--nl-primary), var(--nl-primary-dark));
+    color: #fff;
+    padding: 3rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.nl-hero {
+    background: linear-gradient(135deg, var(--nl-primary-dark), var(--nl-primary) 55%, var(--nl-secondary));
+    color: #fff;
+}
+
+/* ---------------------------------------------------------
+   NOTIFICATIONS
+   --------------------------------------------------------- */
+.nl-notif-item.unread { background: rgba(67,97,238,.08); }
+.nl-notif-dropdown { width: 340px; max-height: 380px; overflow-y: auto; }
+
+/* ---------------------------------------------------------
+   CERTIFICAT
+   --------------------------------------------------------- */
+.nl-certificate {
+    border: 12px solid var(--nl-primary);
+    border-radius: 1rem;
+    padding: 3rem;
+    text-align: center;
+    background: #fff;
+    color: #1f2937;
+    position: relative;
+}
+
+.nl-certificate::before {
+    content: '';
+    position: absolute;
+    inset: 18px;
+    border: 2px solid var(--nl-secondary);
+    border-radius: .5rem;
+    pointer-events: none;
+}
+
+.nl-certificate .seal {
+    font-size: 4rem;
+    color: var(--nl-primary);
+}
+
+@media print {
+    .no-print { display: none !important; }
+    .nl-certificate { border-color: #4361ee !important; }
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE
+   --------------------------------------------------------- */
+@media (max-width: 991.98px) {
+    .nl-sidebar {
+        position: fixed;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+    }
+    .nl-sidebar.show { transform: translateX(0); }
+    .nl-main { padding: 1rem; }
+}
+
+/* Étoiles cliquables (formulaire d'avis) */
+.star-rating { font-size: 1.6rem; cursor: pointer; }
+.star-rating i { color: #d1d5db; transition: color .1s; }
+.star-rating i.active { color: var(--nl-warning); }
+
+/* Lecteur de leçon */
+.nl-lesson-viewer {
+    background: #000;
+    border-radius: .75rem;
+    overflow: hidden;
+}
+.nl-lesson-viewer iframe, .nl-lesson-viewer video {
+    width: 100%;
+    min-height: 70vh;
+    display: block;
+}
+
+/* Quiz */
+.quiz-option {
+    border: 1px solid var(--nl-border);
+    border-radius: .6rem;
+    padding: .6rem 1rem;
+    cursor: pointer;
+    transition: all .15s ease;
+}
+.quiz-option:hover { border-color: var(--nl-primary); }
+.quiz-option.selected { border-color: var(--nl-primary); background: rgba(67,97,238,.08); }
+.quiz-option.correct { border-color: var(--nl-success); background: rgba(45,212,191,.12); }
+.quiz-option.incorrect { border-color: #ef4444; background: rgba(239,68,68,.1); }
