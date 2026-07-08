@@ -1,0 +1,22 @@
+
+name: Deploy to InfinityFree
+
+on:
+  push:
+    branches: [ "main" ] # Se déclenche quand vous poussez sur la branche 'main'
+  workflow_dispatch: # Permet un déclenchement manuel depuis l'onglet Actions
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest code
+        uses: actions/checkout@v4
+
+      - name: Sync files to InfinityFree
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ftpupload.net # Serveur FTP d'InfinityFree
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          server-dir: /htdocs/ # Dossier où déposer les fichiers
