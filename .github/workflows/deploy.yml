@@ -13,7 +13,15 @@ jobs:
       - name: Get latest code
         uses: actions/checkout@v4
 
-      - name: Sync files to InfinityFree
+      - name: Prepare config.php with secrets
+        run: |
+          cp config/config.example.php config/config.php
+          sed -i "s|your_db_name_here|${{ secrets.DB_NAME }}|g" config/config.php
+          sed -i "s|your_username_here|${{ secrets.DB_USER }}|g" config/config.php
+          sed -i "s|your_password_here|${{ secrets.DB_PASS }}|g" config/config.php
+          sed -i "s|localhost|${{ secrets.DB_HOST }}|g" config/config.php
+
+      - name: Sync files to InfinityFree and 
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ftpupload.net # Serveur FTP d'InfinityFree
