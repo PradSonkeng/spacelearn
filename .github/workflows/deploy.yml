@@ -3,7 +3,7 @@ name: Deploy to InfinityFree
 
 on:
   push:
-    branches: [ "main" ] # Se déclenche quand vous poussez sur la branche 'main'
+    branches: [ "main" ] # Se déclenche quand vous poussez sur la branche 'main' .
   workflow_dispatch: # Permet un déclenchement manuel depuis l'onglet Actions
 
 jobs:
