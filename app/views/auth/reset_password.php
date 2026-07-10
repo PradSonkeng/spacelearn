@@ -19,8 +19,8 @@
                 					<i class="fa-solid fa-eye" id="register-eye"></i>
             					</button>
                         </div>
-                        <div id="password-strength"></div>
                     </div>
+                    <div id="password-strength"></div>
                     <div class="mb-3">
                         <label class="form-label">Confirmer le mot de passe</label>
                         <div class="input-group">
