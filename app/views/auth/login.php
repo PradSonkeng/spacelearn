@@ -44,6 +44,11 @@
                         <i class="fa-solid fa-right-to-bracket me-2"></i>Se connecter
                     </button>
                 </form>
+                
+                <p class="text-center text-muted mt-3">
+    					Vous n'avez pas reçu l'email de vérification ? 
+    					<a href="<?= url('auth/resendVerification') ?>" class="fw-semibold">Renvoyer le lien</a>
+				</p>
 
                 <p class="text-center text-muted mt-4 mb-0">
                     Pas encore de compte ? <a href="<?= url('auth/register') ?>" class="fw-semibold">Créer un compte</a>

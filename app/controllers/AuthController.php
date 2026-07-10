@@ -122,13 +122,16 @@ class AuthController extends Controller
         $data = $userModel->registerWithVerification($fullName, $email, $password, $role);
         
         // Envoi du mail de confirmation (simulation pour l'instant)
+        require_once APP_PATH . '/helpers/mail.php';
+        $sent = sendVerificationEmail($email, $fullName, $data['token']);
+        
 		$verifyLink = full_url("auth/verifyEmail?token=" . $data['token']);
-
-        $this->setFlash('success', 
-    			"Compte créé ! Un email de confirmation a été envoyé à <strong>$email</strong>.<br>
-     		Clique sur le lien pour activer ton compte.<br>
-     		<small>Lien : <a href='$verifyLink'>$verifyLink</a></small>"
-		);
+		
+		if ($sent) {
+    			$this->setFlash('success', 'Compte créé ! Un email de confirmation vous a été envoyé.');
+		} else {
+    			$this->setFlash('warning', 'Compte créé, mais l\'email de confirmation n\'a pas pu être envoyé. Contactez l\'administrateur.');
+		}
 
 		$this->redirect('auth/login');
     }
@@ -175,6 +178,45 @@ class AuthController extends Controller
         		$this->setFlash('danger', 'Lien invalide ou déjà utilisé.');
     		}
     		$this->redirect('auth/login');
+	}
+	
+	// Formulaire renvoi lien
+	public function resendVerificationForm(): void
+	{
+    		$this->view('auth/resend_verification', ['title' => 'Renvoyer le lien de vérification'], 'guest');
+	}
+
+	// Traitement du renvoi
+	public function resendVerification(): void
+	{
+    		$this->verifyCsrf();
+    		$email = trim($_POST['email'] ?? '');
+
+    		$userModel = new User();
+    		$user = $userModel->findByEmail($email);
+
+    		if (!$user || $user['email_verified'] == 1) {
+        		$this->setFlash('danger', 'Aucun compte en attente de vérification trouvé.');
+        		$this->redirect('auth/resendVerification');
+    		}
+
+    		// Générer nouveau token
+    		$token = bin2hex(random_bytes(32));
+    		Database::query(
+        		"UPDATE users SET verification_token = :token WHERE id = :id",
+        		['token' => $token, 'id' => $user['id']]
+    		);
+
+    		require_once APP_PATH . '/helpers/mail.php';
+    		$sent = sendVerificationEmail($email, $user['full_name'], $token);
+
+    		if ($sent) {
+        		$this->setFlash('success', 'Un nouveau lien de vérification a été envoyé.');
+    		} else {
+        		$this->setFlash('warning', 'Erreur lors de l\'envoi de l\'email.');
+    		}
+
+    		$this->redirect('auth/resendVerification');
 	}
 
     /** Déconnexion */

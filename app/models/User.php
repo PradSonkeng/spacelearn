@@ -49,7 +49,10 @@ class User extends Model
 	public function verifyEmail(string $token): bool
 	{
     		$user = Database::query(
-        		"SELECT id FROM users WHERE verification_token = :token AND email_verified = 0",
+        		"SELECT id FROM users 
+        		WHERE verification_token = :token 
+        		AND email_verified = 0 
+        		AND created_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)",
         		['token' => $token]
     		)->fetch();
 

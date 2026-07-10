@@ -20,6 +20,12 @@ jobs:
           sed -i "s|your_username_here|${{ secrets.DB_USER }}|g" config/config.php
           sed -i "s|your_password_here|${{ secrets.DB_PASS }}|g" config/config.php
           sed -i "s|localhost|${{ secrets.DB_HOST }}|g" config/config.php
+          
+          
+          sed -i "s|tonemail@gmail.com|${{ secrets.MAIL_USERNAME }}|g" config/config.php
+          sed -i "s|ton-mot-de-passe-app|${{ secrets.MAIL_PASSWORD }}|g" config/config.php
+          sed -i "s|mail@form.com|${{ secrets.MAIL_FROM }}|g" config/config.php
+          sed -i "s|host.mail.com|${{ secrets.MAIL_HOST }}|g" config/config.php
 
       - name: Sync files to InfinityFree and 
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5

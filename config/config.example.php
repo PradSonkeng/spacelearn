@@ -61,3 +61,13 @@ define('MAX_IMAGE_SIZE', 10 * 1024 * 1024);   // 10 Mo
 // =========================================================
 define('APP_NAME', 'SPACELearn');
 define('APP_VERSION', '1.0.0');
+
+// =========================================================
+// CONFIGURATION EMAIL
+// =========================================================
+define('MAIL_HOST',       'host.mail.com');
+define('MAIL_USERNAME',   'tonemail@gmail.com');
+define('MAIL_PASSWORD',   'ton-mot-de-passe-app');
+define('MAIL_FROM',       'mail@form.com');
+define('MAIL_FROM_NAME',  'SPACELearn');
+define('MAIL_PORT',       587);
