@@ -190,7 +190,9 @@ class AuthController extends Controller
 	public function resendVerification(): void
 	{
     		$this->verifyCsrf();
+    		error_log("CSRF OK - Email: " . $_POST['email']);
     		$email = trim($_POST['email'] ?? '');
+    		
 
     		$userModel = new User();
     		$user = $userModel->findByEmail($email);

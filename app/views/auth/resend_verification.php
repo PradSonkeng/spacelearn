@@ -10,6 +10,7 @@
                 <form action="<?= url('auth/resendVerification') ?>" method="POST">
                     <?= csrf_field() ?>
                     <div class="mb-3">
+                    		<label class="form-label">Adresse email</label>
                         <input type="email" name="email" class="form-control" placeholder="votre@email.com" required>
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Renvoyer le lien</button>
