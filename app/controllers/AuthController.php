@@ -34,18 +34,119 @@ class AuthController extends Controller
         }
         
         // bloque tant que l'email n'est pas verifier
-	if ($user['email_verified'] == 0) {
-    		$this->setFlash('warning', 'Vous devez vérifier votre adresse email avant de vous connecter.');
-    		$this->redirect('auth/login');
+		if ($user['email_verified'] == 0) {
+    			$this->setFlash('warning', 'Vous devez vérifier votre adresse email avant de vous connecter.');
+    			$this->redirect('auth/login');
+		}
+
+        	$_SESSION['user_id']   = $user['id'];
+        	$_SESSION['user_role'] = $user['role'];
+        	$_SESSION['user_name'] = $user['full_name'];
+
+        	$this->setFlash('success', 'Bienvenue, ' . $user['full_name'] . ' !');
+        	$this->redirectToDashboard();
+    	}
+    	
+    	/** Formulaire mot de passe oublié */
+	public function forgotPassword(): void
+	{
+    		$this->view('auth/forgot_password', ['title' => 'Mot de passe oublié'], 'guest');
 	}
+	
+	/** Envoi du lien de réinitialisation */
+	public function sendResetLink(): void
+	{
+    		$this->verifyCsrf();
+    		$email = trim($_POST['email'] ?? '');
+    		
+    		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        		$this->setFlash('danger', 'Adresse email invalide.');
+        		$this->redirect('auth/forgotPassword');
+    		}
 
-        $_SESSION['user_id']   = $user['id'];
-        $_SESSION['user_role'] = $user['role'];
-        $_SESSION['user_name'] = $user['full_name'];
+    		$userModel = new User();
+    		if (!$userModel->findByEmail($email)) {
+        		$this->setFlash('success', 'Si un compte existe avec cet email, un lien de réinitialisation vous a été envoyé.');
+        		$this->redirect('auth/forgotPassword');
+    		}
 
-        $this->setFlash('success', 'Bienvenue, ' . $user['full_name'] . ' !');
-        $this->redirectToDashboard();
-    }
+    		$token = bin2hex(random_bytes(32));
+    		$expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
+
+    		Database::query(
+        		"INSERT INTO password_resets (email, token, expires_at)
+        		VALUES (:email, :token, :expires)
+         	ON DUPLICATE KEY UPDATE token = :token, expires_at = :expires",
+        		['email' => $email, 'token' => $token, 'expires' => $expires]
+    		);
+
+		// Envoi de l'email
+    		require_once APP_PATH . '/helpers/mail.php';
+    		$resetLink = full_url("auth/resetPassword?token=" . $token);
+    		$subject = "Réinitialisation de votre mot de passe - " . APP_NAME;
+    		$body = "
+        		<h2>Réinitialisation de mot de passe</h2>
+        		<p>Bonjour,</p>
+        		<p>Vous avez demandé une réinitialisation de mot de passe.</p>
+        		<p><a href='$resetLink' style='font-size:18px;'>Réinitialiser mon mot de passe</a></p>
+        		<p>Ce lien est valide pendant <strong>1 heure</strong>.</p>
+        		<hr>
+        		<small>Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</small>
+		";
+    		$sent = sendEmail($email, $user['full_name'], $subject, $body);  // Fonction générique
+
+    		if ($sent) {
+        		$this->setFlash('success', 'Un lien de réinitialisation vous a été envoyé par email.');
+    		} else {
+        		$this->setFlash('warning', 'Le lien n\'a pas pu être envoyé. Veuillez réessayer plus tard.');
+    		}
+    		$this->redirect('auth/forgotPassword');
+	}
+	
+	/** Formulaire de réinitialisation */
+	public function resetPassword(): void
+	{
+    		$token = $_GET['token'] ?? $_POST['token'] ?? '';
+    		$this->view('auth/reset_password', [
+        		'title' => 'Réinitialisation du mot de passe',
+        		'token' => $token
+    		], 'guest');
+	}
+	
+	/** Traitement du changement de mot de passe */
+	public function doResetPassword(): void
+	{
+    		$this->verifyCsrf();
+
+    		$token = $_POST['token'] ?? '';
+    		$password = $_POST['password'] ?? '';
+    		$confirm = $_POST['password_confirm'] ?? '';
+
+    		if ($password !== $confirm || strlen($password) < 6) {
+        		$this->setFlash('danger', 'Les mots de passe ne correspondent pas ou sont trop courts.');
+        		$this->redirect("auth/resetPassword?token=$token");
+    		}
+
+    		$row = Database::query(
+        		"SELECT email FROM password_resets WHERE token = :token AND expires_at > NOW()",
+        		['token' => $token]
+    		)->fetch();
+
+    		if (!$row) {
+        		$this->setFlash('danger', 'Lien invalide ou expiré.');
+        		$this->redirect('auth/login');
+    		}
+
+    		$userModel = new User();
+    		$user = $userModel->findByEmail($row['email']);
+
+    		if ($user) {
+        		$userModel->changePassword($user['id'], $password);
+        		Database::query("DELETE FROM password_resets WHERE token = :token", ['token' => $token]);
+        		$this->setFlash('success', 'Votre mot de passe a été modifié avec succès.');
+        		$this->redirect('auth/login');
+    		}
+	}
 
     /** Formulaire d'inscription */
     public function register(): void
@@ -190,7 +291,6 @@ class AuthController extends Controller
 	public function resendVerification(): void
 	{
     		$this->verifyCsrf();
-    		error_log("CSRF OK - Email: " . $_POST['email']);
     		$email = trim($_POST['email'] ?? '');
     		
 

@@ -1,4 +1,4 @@
-# NovaLearn — Plateforme LMS (Learning Management System)
+# SPACELearn — Plateforme LMS (Learning Management System)
 
 Plateforme web de gestion de l'apprentissage développée en **PHP natif (MVC) + MySQL**,
 avec **Bootstrap 5**, **FontAwesome** et **AJAX** pour les interactions dynamiques.
@@ -62,11 +62,10 @@ lms/
 │   │                          # StudentController, ApiController, CertificateController...
 │   ├── models/                # User, Course, Lesson, Evaluation, Enrollment, ...
 │   └── views/                 # Vues organisées par rôle (admin/, teacher/, student/...)
-└── public/                  # DocumentRoot (point d'entrée index.php)
-    ├── index.php             # Front controller
-    ├── .htaccess              # Réécriture d'URL (routing propre)
-    ├── assets/css, js, img
-    └── uploads/               # Fichiers PDF, vidéos, avatars, images
+├── index.php             # Front controller
+├── .htaccess              # Réécriture d'URL (routing propre)
+├── assets/css, js, img
+└── uploads/               # Fichiers PDF, vidéos, avatars, images
 ```
 
 ### Routage
@@ -81,8 +80,8 @@ Exemple : `/teacher/courseManage/3` → `TeacherController::courseManage(3)`
 1. **Copier le projet** dans le dossier des sites web de XAMPP :
    ```bash
    sudo cp -r lms /opt/lampp/htdocs/
-   sudo chmod -R 775 /opt/lampp/htdocs/lms/public/uploads
-   sudo chown -R daemon:daemon /opt/lampp/htdocs/lms/public/uploads
+   sudo chmod -R 775 /opt/lampp/htdocs/lms/uploads
+   sudo chown -R daemon:daemon /opt/lampp/htdocs/lms/uploads
    ```
 
 2. **Démarrer Apache et MySQL** :
@@ -114,7 +113,7 @@ Exemple : `/teacher/courseManage/3` → `TeacherController::courseManage(3)`
 
 7. **Accéder à la plateforme** :
    ```
-   http://localhost/lms/public/
+   http://localhost/lms/
    ```
 
 ### Comptes de démonstration (mot de passe : `password123`)

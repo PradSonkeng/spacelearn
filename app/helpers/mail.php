@@ -51,3 +51,36 @@ function sendVerificationEmail(string $email, string $fullName, string $token): 
         return false;
     }
 }
+
+function sendEmail(string $to, string $name, string $subject, string $body): bool
+{
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host       = MAIL_HOST;
+        $mail->SMTPAuth   = true;
+        $mail->Username   = MAIL_USERNAME;
+        $mail->Password   = MAIL_PASSWORD;
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port       = MAIL_PORT;
+
+        $mail->SMTPOptions = [
+            'ssl' => ['verify_peer' => false, 'verify_peer_name' => false, 'allow_self_signed' => true]
+        ];
+
+        $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
+        $mail->addAddress($to, $name);
+
+        $mail->isHTML(true);
+        $mail->Subject = $subject;
+        $mail->Body    = $body;
+
+        $mail->send();
+        return true;
+
+    } catch (Exception $e) {
+        error_log("PHPMailer Error (Forgot Password): " . $mail->ErrorInfo);
+        return false;
+    }
+}

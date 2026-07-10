@@ -40,6 +40,9 @@
                             	</button>
                         </div>
                     </div>
+                    <div class="text-end mb-3">
+    						<a href="<?= url('auth/forgotPassword') ?>" class="text-muted small">Mot de passe oublié ?</a>
+					</div>
                     <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
                         <i class="fa-solid fa-right-to-bracket me-2"></i>Se connecter
                     </button>
