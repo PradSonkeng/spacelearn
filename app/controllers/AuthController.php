@@ -127,9 +127,21 @@ class AuthController extends Controller
     		$token = $_POST['token'] ?? '';
     		$password = $_POST['password'] ?? '';
     		$confirm = $_POST['password_confirm'] ?? '';
+    		
+    		// Validation stricte du mot de passe (doit être FORT)
+		if (strlen($password) < 8 || 
+    			!preg_match('/[a-z]/', $password) || 
+    			!preg_match('/[A-Z]/', $password) || 
+    			!preg_match('/\d/', $password) || 
+    			!preg_match('/[!@#$%^&*()_+\-=\[\]{};:\'",.<>\/?]/', $password)) {
+    
+    			$this->setFlash('danger', 'Le mot de passe doit être FORT : minimum 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial (!@#$% etc.).');
+    			$this->redirect("auth/resetPassword?token=" . urlencode($token));
+    			return;
+		}
 
-    		if (empty($token) || $password !== $confirm || strlen($password) < 6) {
-        		$this->setFlash('danger', 'Les mots de passe ne correspondent pas ou sont trop courts.');
+    		if (empty($token) || $password !== $confirm) {
+        		$this->setFlash('danger', 'Les mots de passe ne correspondent ');
         		$this->redirect("auth/resetPassword?token=$token");
         		return;
     		}
@@ -210,10 +222,17 @@ class AuthController extends Controller
             $this->redirect('auth/register');
         }
 
-        if (strlen($password) < 6) {
-            $this->setFlash('danger', 'Le mot de passe doit contenir au moins 6 caractères.');
-            $this->redirect('auth/register');
-        }
+        // Validation stricte du mot de passe (doit être FORT)
+		if (strlen($password) < 8 || 
+    		!preg_match('/[a-z]/', $password) || 
+    		!preg_match('/[A-Z]/', $password) || 
+    		!preg_match('/\d/', $password) || 
+    		!preg_match('/[!@#$%^&*()_+\-=\[\]{};:\'",.<>\/?]/', $password)) {
+    
+    		$this->setFlash('danger', 'Le mot de passe doit être FORT : minimum 8 caractères, une majuscule, une minuscule, un chiffre et un caractère spécial (!@#$% etc.).');
+    		$this->redirect('auth/register');
+    		return;
+	}
 
         if ($password !== $confirm) {
             $this->setFlash('danger', 'Les mots de passe ne correspondent pas.');

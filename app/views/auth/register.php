@@ -38,17 +38,18 @@
                             <label class="form-label">Mot de passe</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                                <input type="password" name="password" id="register-password" class="form-control" placeholder="6 caractères min." required minlength="6">
+                                <input type="password" name="password" id="register-password" class="form-control" placeholder="8 caractères min." required minlength="8">
                                 <button class="btn btn-outline-secondary" type="button" id="toggle-register-password">
                 						<i class="fa-solid fa-eye" id="register-eye"></i>
             						</button>
                             </div>
+                            <div id="password-strength"></div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Confirmer</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                                <input type="password" name="password_confirm" id="register-confirm" class="form-control" placeholder="••••••••" required minlength="6">
+                                <input type="password" name="password_confirm" id="register-confirm" class="form-control" placeholder="••••••••" required minlength="8">
                                 <button class="btn btn-outline-secondary" type="button" id="toggle-register-confirm">
                 						<i class="fa-solid fa-eye" id="confirm-eye"></i>
             						</button>
@@ -133,4 +134,66 @@
     		});
 	});
 	</script>
+	<script>
+	// Force du mot de passe
+	function checkPasswordStrength(password) {
+    		let score = 0;
+    		const feedback = document.getElementById('password-strength');
+
+    		if (password.length >= 8) score++;
+    		if (/[a-z]/.test(password)) score++;
+    		if (/[A-Z]/.test(password)) score++;
+    		if (/\d/.test(password)) score++;
+    		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) score++;
+
+    		let strengthText = '';
+    		let color = '';
+    		let isStrong = false;
+
+    		if (score === 5) {
+        		strengthText = 'Fort ✓';
+        		color = 'success';
+        		isStrong = true;
+    		} else if (score === 4) {
+        		strengthText = 'Moyen';
+        		color = 'info';
+    		} else if (score === 3) {
+        		strengthText = 'Faible';
+        		color = 'warning';
+    		} else {
+        		strengthText = 'Très faible';
+        		color = 'danger';
+    		}
+
+    		feedback.innerHTML = `
+        		<div class="progress mt-1" style="height: 6px;">
+            		<div class="progress-bar bg-${color}" style="width: ${score * 20}%"></div>
+        		</div>
+        		<small class="text-${color}">${strengthText}</small>
+    		`;
+
+    		return isStrong;
+	}
+
+	// Application sur le champ mot de passe
+	document.addEventListener('DOMContentLoaded', function() {
+   		 const pwdInput = document.querySelector('input[name="password"]');
+    		if (!pwdInput) return;
+
+    		const strengthDiv = document.createElement('div');
+    		strengthDiv.id = 'password-strength';
+    		pwdInput.parentElement.appendChild(strengthDiv);
+
+    		pwdInput.addEventListener('input', function() {
+        		checkPasswordStrength(this.value);
+        		
+        		// Désactive le bouton de soumission si pas assez fort
+        		const form = this.form;
+        		const submitBtn = form.querySelector('button[type="submit"]');
+        		if (submitBtn) {
+            		submitBtn.disabled = !isStrong;
+        		}
+    		});
+	});
+</script>
 </div>
