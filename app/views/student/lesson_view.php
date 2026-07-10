@@ -47,7 +47,7 @@ $isCompleted = $progress && $progress['status'] === 'termine';
                 <span></span>
             <?php endif; ?>
 
-			<--! ajustement du bouton pour passer l'evaluation-->
+			// ajustement du bouton pour passer l'evaluation
             <?php if ($nextLesson || $lesson['evaluation_id']): ?>
                 <?php
                 	$btnClass = $hasViewedContent ? 'btn-primary' : 'btn-secondary disabled';
