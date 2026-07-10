@@ -34,7 +34,10 @@
                         <label class="form-label">Mot de passe</label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                            <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                            <input type="password" name="password" id="login-password" class="form-control" placeholder="••••••••" required>
+                            <button class="btn btn-outline-secondary" type="button" id="toggle-login-password">
+                            		<i class="fa-solid fa-eye" id="login-eye"></i>
+                            	</button>
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
@@ -53,4 +56,17 @@
             </div>
         </div>
     </div>
+    <script>
+	document.getElementById('toggle-login-password').addEventListener('click', function () {
+    		const pwd = document.getElementById('login-password');
+    		const icon = document.getElementById('login-eye');
+    		if (pwd.type === 'password') {
+        		pwd.type = 'text';
+        		icon.classList.replace('fa-eye', 'fa-eye-slash');
+    		} else {
+        		pwd.type = 'password';
+        		icon.classList.replace('fa-eye-slash', 'fa-eye');
+    		}
+	});
+	</script>
 </div>

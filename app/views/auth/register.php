@@ -37,14 +37,20 @@
                             <label class="form-label">Mot de passe</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                                <input type="password" name="password" class="form-control" placeholder="6 caractères min." required minlength="6">
+                                <input type="password" name="password" id="register-password" class="form-control" placeholder="6 caractères min." required minlength="6">
+                                <button class="btn btn-outline-secondary" type="button" id="toggle-register-password">
+                						<i class="fa-solid fa-eye" id="register-eye"></i>
+            						</button>
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Confirmer</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="fa-solid fa-lock"></i></span>
-                                <input type="password" name="password_confirm" class="form-control" placeholder="••••••••" required minlength="6">
+                                <input type="password" name="password_confirm" id="register-confirm" class="form-control" placeholder="••••••••" required minlength="6">
+                                <button class="btn btn-outline-secondary" type="button" id="toggle-register-confirm">
+                						<i class="fa-solid fa-eye" id="confirm-eye"></i>
+            						</button>
                             </div>
                         </div>
                     </div>
@@ -78,4 +84,20 @@
             </div>
         </div>
     </div>
+    <script>
+	function togglePassword(inputId, iconId) {
+    		const input = document.getElementById(inputId);
+    		const icon = document.getElementById(iconId);
+    		if (input.type === 'password') {
+        		input.type = 'text';
+        		icon.classList.replace('fa-eye', 'fa-eye-slash');
+    		} else {
+        		input.type = 'password';
+        		icon.classList.replace('fa-eye-slash', 'fa-eye');
+    		}
+	}
+
+	document.getElementById('toggle-register-password').addEventListener('click', () => togglePassword('register-password', 'register-eye'));
+	document.getElementById('toggle-register-confirm').addEventListener('click', () => togglePassword('register-confirm', 'confirm-eye'));
+	</script>
 </div>
