@@ -31,6 +31,7 @@
                             <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
                             <input type="email" name="email" class="form-control" placeholder="vous@exemple.com" required>
                         </div>
+                        <div id="email-feedback" class="mt-1 small"></div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -96,6 +97,37 @@
         		icon.classList.replace('fa-eye-slash', 'fa-eye');
     		}
 	}
+	
+	
+	const emailInput = document.getElementById('email');
+	const feedback = document.getElementById('email-feedback');
+	
+	emailInput.addEventListener('blur', function() {
+    		const email = this.value.trim();
+    		if (email.length < 5) return;
+
+    		fetch('<?= url("auth/checkEmail") ?>', {
+        		method: 'POST',
+        		headers: {'Content-Type': 'application/json'},
+        		body: JSON.stringify({email: email, csrf_token: '<?= csrf_token() ?>'})
+   		})
+    		.then(r => r.json())
+    		.then(data => {
+        		if (!data.valid) {
+            		feedback.innerHTML = `<span class="text-danger">${data.message}</span>`;
+            		emailInput.classList.add('is-invalid');
+        		} else if (data.exists) {
+            		feedback.innerHTML = `<span class="text-danger">${data.message}</span>`;
+            		emailInput.classList.add('is-invalid');
+        		} else {
+            		feedback.innerHTML = `<span class="text-success">${data.message}</span>`;
+            		emailInput.classList.remove('is-invalid');
+        		}
+    		})
+    		.catch(() => {
+        		feedback.innerHTML = '<span class="text-warning">Vérification temporairement indisponible.</span>';
+    		});
+	});
 
 	document.getElementById('toggle-register-password').addEventListener('click', () => togglePassword('register-password', 'register-eye'));
 	document.getElementById('toggle-register-confirm').addEventListener('click', () => togglePassword('register-confirm', 'confirm-eye'));

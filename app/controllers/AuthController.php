@@ -32,6 +32,12 @@ class AuthController extends Controller
             $this->setFlash('danger', 'Identifiants incorrects ou compte désactivé.');
             $this->redirect('auth/login');
         }
+        
+        // bloque tant que l'email n'est pas verifier
+	if ($user['email_verified'] == 0) {
+    		$this->setFlash('warning', 'Vous devez vérifier votre adresse email avant de vous connecter.');
+    		$this->redirect('auth/login');
+	}
 
         $_SESSION['user_id']   = $user['id'];
         $_SESSION['user_role'] = $user['role'];
@@ -53,6 +59,27 @@ class AuthController extends Controller
     /** Traitement de l'inscription */
     public function doRegister(): void
     {
+    		// Limitation : max 5 tentatives par IP par heure
+		$ip = $_SERVER['REMOTE_ADDR'];
+
+		$attemptCount = Database::query(
+    			"SELECT COUNT(*) as cnt FROM registration_attempts 
+     		WHERE ip_address = :ip AND attempted_at > DATE_SUB(NOW(), INTERVAL 1 HOUR)",
+    			['ip' => $ip]
+		)->fetch()['cnt'];
+
+		if ($attemptCount >= 5) {
+    			$this->setFlash('danger', 'Trop de tentatives d\'inscription. Veuillez réessayer dans 1 heure.');
+    		$this->redirect('auth/register');
+	}
+
+	// Enregistrer la tentative
+	Database::query(
+    		"INSERT INTO registration_attempts (ip_address, email) VALUES (:ip, :email)",
+    		['ip' => $ip, 'email' => $email]
+	);
+	
+	
         $this->verifyCsrf();
 
         $fullName = trim($_POST['full_name'] ?? '');
@@ -87,16 +114,68 @@ class AuthController extends Controller
         }
 
         $userModel = new User();
-        if ($userModel->findByEmail($email)) {
+        if ($userModel->emailExists($email)) {
             $this->setFlash('danger', 'Cet email est déjà utilisé.');
             $this->redirect('auth/register');
         }
 
-        $userModel->register($fullName, $email, $password, $role);
+        $data = $userModel->registerWithVerification($fullName, $email, $password, $role);
+        
+        // Envoi du mail de confirmation (simulation pour l'instant)
+		$verifyLink = full_url("auth/verifyEmail?token=" . $data['token']);
 
-        $this->setFlash('success', 'Votre compte a été créé avec succès. Vous pouvez vous connecter.');
-        $this->redirect('auth/login');
+        $this->setFlash('success', 
+    			"Compte créé ! Un email de confirmation a été envoyé à <strong>$email</strong>.<br>
+     		Clique sur le lien pour activer ton compte.<br>
+     		<small>Lien : <a href='$verifyLink'>$verifyLink</a></small>"
+		);
+
+		$this->redirect('auth/login');
     }
+    
+    /** Vérification en temps réel de l'email (AJAX) */
+	public function checkEmail(): void
+	{
+    		$this->verifyCsrf();
+    		$email = trim($_POST['email'] ?? '');
+
+		// 1. Format valide
+    		if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        		$this->json(['valid' => false, 'message' => 'Format d\'email invalide']);
+    		}
+    		
+    		// 2. Vérification MX (domaine existe et accepte les emails)
+    		$domain = substr(strrchr($email, "@"), 1);
+    		$mxValid = checkdnsrr($domain, 'MX') || checkdnsrr($domain, 'A');
+    		
+    		if (!$mxValid) {
+        		$this->json(['valid' => false, 'message' => 'Domaine email invalide ou inexistant.']);
+    		}
+
+		// 3. Unicité dans la base
+    		$userModel = new User();
+    		$exists = $userModel->emailExists($email);
+
+    		$this->json([
+        		'valid' => true,
+        		'exists' => $exists,
+        		'message' => $exists ? 'Cet email est déjà utilisé.' : 'Email disponible.'
+    		]);
+	}
+
+	/** Vérification du lien d'activation */
+	public function verifyEmail(): void
+	{
+    		$token = $_GET['token'] ?? '';
+    		$userModel = new User();
+
+    		if ($userModel->verifyEmail($token)) {
+        		$this->setFlash('success', 'Votre email a été vérifié avec succès. Vous pouvez maintenant vous connecter.');
+    		} else {
+        		$this->setFlash('danger', 'Lien invalide ou déjà utilisé.');
+    		}
+    		$this->redirect('auth/login');
+	}
 
     /** Déconnexion */
     public function logout(): void
