@@ -98,7 +98,11 @@
     		}
 	}
 	
-	
+
+	document.getElementById('toggle-register-password').addEventListener('click', () => togglePassword('register-password', 'register-eye'));
+	document.getElementById('toggle-register-confirm').addEventListener('click', () => togglePassword('register-confirm', 'confirm-eye'));
+	</script>
+	<script>
 	const emailInput = document.getElementById('email');
 	const feedback = document.getElementById('email-feedback');
 	
@@ -128,8 +132,5 @@
         		feedback.innerHTML = '<span class="text-warning">Vérification temporairement indisponible.</span>';
     		});
 	});
-
-	document.getElementById('toggle-register-password').addEventListener('click', () => togglePassword('register-password', 'register-eye'));
-	document.getElementById('toggle-register-confirm').addEventListener('click', () => togglePassword('register-confirm', 'confirm-eye'));
 	</script>
 </div>
