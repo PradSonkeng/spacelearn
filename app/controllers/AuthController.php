@@ -128,9 +128,10 @@ class AuthController extends Controller
     		$password = $_POST['password'] ?? '';
     		$confirm = $_POST['password_confirm'] ?? '';
 
-    		if ($password !== $confirm || strlen($password) < 6) {
+    		if (empty($token) || $password !== $confirm || strlen($password) < 6) {
         		$this->setFlash('danger', 'Les mots de passe ne correspondent pas ou sont trop courts.');
         		$this->redirect("auth/resetPassword?token=$token");
+        		return;
     		}
 
     		$row = Database::query(
@@ -140,7 +141,8 @@ class AuthController extends Controller
 
     		if (!$row) {
         		$this->setFlash('danger', 'Lien invalide ou expiré.');
-        		$this->redirect('auth/login');
+        		$this->redirect('auth/forgotPassword');
+        		return;
     		}
 
     		$userModel = new User();
@@ -150,6 +152,9 @@ class AuthController extends Controller
         		$userModel->changePassword($user['id'], $password);
         		Database::query("DELETE FROM password_resets WHERE token = :token", ['token' => $token]);
         		$this->setFlash('success', 'Votre mot de passe a été modifié avec succès.');
+        		$this->redirect('auth/login');
+    		} else {
+        		$this->setFlash('danger', 'Une erreur est survenue.');
         		$this->redirect('auth/login');
     		}
 	}

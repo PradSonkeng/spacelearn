@@ -6,7 +6,7 @@
 
                 <?php display_flash(); ?>
 
-                <form action="<?= url('auth/resetPassword') ?>" method="POST">
+                <form action="<?= url('auth/doResetPassword') ?>" method="POST">
                     <?= csrf_field() ?>
                     <input type="hidden" name="token" value="<?= e($_GET['token'] ?? '') ?>">
 
