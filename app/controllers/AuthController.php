@@ -75,9 +75,15 @@ class AuthController extends Controller
 
     		Database::query(
         		"INSERT INTO password_resets (email, token, expires_at)
-        		VALUES (:email, :token, :expires)
-         	ON DUPLICATE KEY UPDATE token = :token, expires_at = :expires",
-        		['email' => $email, 'token' => $token, 'expires' => $expires]
+        		VALUES (:email, :token, :expires_at)
+         	ON DUPLICATE KEY UPDATE token = :token2, expires_at = :expires_at2",
+        		[
+        			'email' => $email, 
+        			'token' => $token, 
+        			'expires_at' => $expires,
+        			'token2'      => $token,
+            		'expires_at2' => $expires
+        		]
     		);
 
 		// Envoi de l'email
