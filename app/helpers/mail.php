@@ -1,5 +1,5 @@
 <?php
-require_once APP_PATH . '/../vendor/autoload.php'; // si Composer
+require_once APP_PATH . '/../vendor/autoload.php'; // Composer
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -16,6 +16,15 @@ function sendVerificationEmail(string $email, string $fullName, string $token): 
         $mail->Password   = MAIL_PASSWORD;
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = MAIL_PORT;
+        
+        // Important pour Gmail
+        $mail->SMTPOptions = [
+            'ssl' => [
+                'verify_peer' => false,
+                'verify_peer_name' => false,
+                'allow_self_signed' => true
+            ]
+        ];
 
         $mail->setFrom(MAIL_FROM, MAIL_FROM_NAME);
         $mail->addAddress($email, $fullName);
