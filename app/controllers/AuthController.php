@@ -78,11 +78,11 @@ class AuthController extends Controller
         		VALUES (:email, :token, :expires_at)
          	ON DUPLICATE KEY UPDATE token = :token2, expires_at = :expires_at2",
         		[
-        			'email' => $email, 
-        			'token' => $token, 
-        			'expires_at' => $expires,
-        			'token2'      => $token,
-            		'expires_at2' => $expires
+        			'email' 			=> $email, 
+        			'token' 			=> $token, 
+        			'expires_at' 	=> $expires,
+        			'token2'      	=> $token,
+            		'expires_at2' 	=> $expires
         		]
     		);
 
@@ -99,7 +99,7 @@ class AuthController extends Controller
         		<hr>
         		<small>Si vous n'êtes pas à l'origine de cette demande, ignorez cet email.</small>
 		";
-    		$sent = sendEmail($email, $user['full_name'], $subject, $body);  // Fonction générique
+    		$sent = sendEmail($email, $user['full_name'] ?? 'Utilisateur', $subject, $body);  // Fonction générique
 
     		if ($sent) {
         		$this->setFlash('success', 'Un lien de réinitialisation vous a été envoyé par email.');
