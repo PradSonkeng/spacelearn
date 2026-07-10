@@ -47,16 +47,25 @@ $isCompleted = $progress && $progress['status'] === 'termine';
                 <span></span>
             <?php endif; ?>
 
-            <?php if ($nextLesson): ?>
-                <?php if ($isCompleted): ?>
-                    <a href="<?= url('student/lesson/' . $nextLesson['id']) ?>" class="btn btn-primary"><?= e(truncate($nextLesson['title'], 25)) ?><i class="fa-solid fa-arrow-right ms-2"></i></a>
-                <?php elseif ($lesson['evaluation_id']): ?>
-                    <a href="<?= url('student/evaluation/' . $lesson['id']) ?>" class="btn btn-warning"><i class="fa-solid fa-clipboard-question me-2"></i>Passer l'évaluation pour continuer</a>
-                <?php else: ?>
-                    <a href="<?= url('student/lesson/' . $nextLesson['id']) ?>" class="btn btn-primary"><?= e(truncate($nextLesson['title'], 25)) ?><i class="fa-solid fa-arrow-right ms-2"></i></a>
-                <?php endif; ?>
-            <?php elseif ($lesson['evaluation_id'] && !$isCompleted): ?>
-                <a href="<?= url('student/evaluation/' . $lesson['id']) ?>" class="btn btn-warning"><i class="fa-solid fa-clipboard-question me-2"></i>Passer l'évaluation</a>
+			<--! ajustement du bouton pour passer l'evaluation-->
+            <?php if ($nextLesson || $lesson['evaluation_id']): ?>
+                <?php
+                	$btnClass = $hasViewedContent ? 'btn-primary' : 'btn-secondary disabled';
+        			$btnText  = $lesson['evaluation_id'] 
+            			? 'Passer l\'évaluation' 
+            			: e(truncate($nextLesson['title'] ?? '', 25));
+        			$btnLink  = $lesson['evaluation_id'] 
+            			? url('student/evaluation/' . $lesson['id']) 
+            			: url('student/lesson/' . $nextLesson['id']);
+                ?>
+                
+                <a href="<?= $btnLink ?>" 
+           			id="evalNextBtn"
+           			class="btn <?= $btnClass ?>"
+           			<?= $hasViewedContent ? '' : 'onclick="return false;"' ?>>
+            			<?= $btnText ?>
+            			<i class="fa-solid fa-arrow-right ms-2"></i>
+        			</a>
             <?php endif; ?>
         </div>
     </div>
@@ -83,10 +92,67 @@ $isCompleted = $progress && $progress['status'] === 'termine';
             <?php if ($bestScore !== null): ?>
                 <p class="small mb-2">Votre meilleur score : <strong><?= number_format($bestScore, 0) ?>%</strong></p>
             <?php endif; ?>
-            <a href="<?= url('student/evaluation/' . $lesson['id']) ?>" class="btn btn-sm btn-outline-primary w-100">
-                <?= $isCompleted ? 'Repasser l\'évaluation' : 'Passer l\'évaluation' ?>
-            </a>
         </div>
         <?php endif; ?>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const evalBtn = document.getElementById('evalNextBtn');
+    if (!evalBtn) return;
+
+    let contentCompleted = <?= $hasViewedContent ? 'true' : 'false' ?>;
+
+    // === VIDÉO ===
+    const video = document.querySelector('video');
+    if (video) {
+        video.addEventListener('timeupdate', function () {
+            if (!contentCompleted && video.duration && (video.currentTime / video.duration) >= 0.95) {
+                markContentCompleted();
+            }
+        });
+    }
+
+    // === PDF (iframe) - détection scroll + temps minimum ===
+    const iframe = document.querySelector('iframe');
+    if (iframe) {
+        let scrollTimeout;
+        iframe.addEventListener('load', function () {
+            try {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                iframeDoc.addEventListener('scroll', function () {
+                    clearTimeout(scrollTimeout);
+                    scrollTimeout = setTimeout(() => {
+                        if (iframeDoc.documentElement.scrollTop + iframeDoc.documentElement.clientHeight >= 
+                            iframeDoc.documentElement.scrollHeight * 0.95) {
+                            markContentCompleted();
+                        }
+                    }, 800);
+                });
+            } catch(e) {}
+        });
+
+        // Fallback : après 45 secondes de visualisation
+        setTimeout(() => {
+            if (!contentCompleted) markContentCompleted();
+        }, 45000);
+    }
+
+    function markContentCompleted() {
+        if (contentCompleted) return;
+        contentCompleted = true;
+
+        fetch('<?= url("student/markContentViewed/" . $lesson['id']) ?>', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ csrf_token: '<?= csrf_token() ?>' })
+        });
+
+        // Activer le bouton
+        evalBtn.classList.remove('btn-secondary', 'disabled');
+        evalBtn.classList.add('btn-primary');
+        evalBtn.onclick = null;
+    }
+});
+</script>

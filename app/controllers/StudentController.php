@@ -176,7 +176,24 @@ class StudentController extends Controller
             'allLessons' => $allLessons,
             'progress' => (new LessonProgress())->get(current_user_id(), $id),
             'bestScore' => $bestScore,
+            'hasViewedContent' => (new LessonProgress())->hasViewedContent(current_user_id(), $id), //importation
         ]);
+    }
+    
+    public function markContentViewed(int $lessonId): void
+    {
+    		if (!is_logged_in() || current_role() !== 'etudiant') {
+        		$this->json(['ok' => false], 403);
+    		}
+    		
+    		$lessonModel = new Lesson();
+    		$lesson = $lessonModel->details($lessonId);
+    		
+    		if ($lesson && (new Enrollment())->isEnrolled(current_user_id(), $lesson['course_id'])) {
+        		(new LessonProgress())->markContentViewed(current_user_id(), $lessonId);
+    		}
+    		
+    		$this->json(['ok' => true]);
     }
 
     // =====================================================

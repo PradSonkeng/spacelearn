@@ -48,4 +48,25 @@ class LessonProgress extends Model
         }
         return $map;
     }
+    // gerer le blockage/deblockage de l'evaluation
+    public function markContentViewed(int $studentId, int $lessonId): void
+    {
+    		$existing = $this->get($studentId, $lessonId);
+    		$data = ['content_viewed' => 1];
+    	
+    		if ($existing){
+    			$this->update((int)$existing['id'], $data);
+    		}else{
+    			$data['student_id'] = $studentId;
+    			$data['lesson_id'] = $lessonId;
+    			$data['status'] = 'en_cours';
+    			$this->create($data);
+    		}
+    }
+    
+    public function hasViewedContent(int $studentId, int $lessonId): bool
+    {
+    		$row = $this->get($studentId, $lessonId);
+    		return $row && !empty($row['content_viewed']);
+    }
 }
