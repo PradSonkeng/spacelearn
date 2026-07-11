@@ -43,8 +43,8 @@
                 						<i class="fa-solid fa-eye" id="register-eye"></i>
             						</button>
                             </div>
+                            <div id="password-strength"></div>
                         </div>
-                        <div id="password-strength"></div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Confirmer</label>
                             <div class="input-group">
@@ -166,10 +166,10 @@
     		}
 
     		feedback.innerHTML = `
-        		<div class="progress mt-1" style="height: 6px;">
+        		<div class="progress mt-1" style="height: 8px;">
             		<div class="progress-bar bg-${color}" style="width: ${score * 20}%"></div>
         		</div>
-        		<small class="text-${color}">${strengthText}</small>
+        		<small class="text-${color}fw-semibold d-block mt-1">${strengthText}</small>
     		`;
 
     		return isStrong;
@@ -182,10 +182,11 @@
 
     		const strengthDiv = document.createElement('div');
     		strengthDiv.id = 'password-strength';
-    		pwdInput.parentElement.appendChild(strengthDiv);
+    		strengthDiv.className = 'mt-2';
+    		pwdInput.parentElement.parentElement.appendChild(strengthDiv);
 
     		pwdInput.addEventListener('input', function() {
-        		checkPasswordStrength(this.value);
+        		const isStrong = checkPasswordStrength(this.value);
         		
         		// Désactive le bouton de soumission si pas assez fort
         		const form = this.form;

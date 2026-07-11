@@ -19,8 +19,8 @@
                 					<i class="fa-solid fa-eye" id="register-eye"></i>
             					</button>
                         </div>
+                        <div id="password-strength"></div>
                     </div>
-                    <div id="password-strength"></div>
                     <div class="mb-3">
                         <label class="form-label">Confirmer le mot de passe</label>
                         <div class="input-group">
@@ -68,36 +68,31 @@
 	
     		let strengthText = '';
     		let color = '';
+    		let isStrong = false;
 
-    		switch(score) {
-        		case 0:
-        		case 1:
-            		strengthText = 'Très faible';
-            		color = 'danger';
-            		break;
-        		case 2:
-            		strengthText = 'Faible';
-            		color = 'warning';
-            		break;
-        		case 3:
-            		strengthText = 'Moyen';
-            		color = 'info';
-            		break;
-       		case 4:
-        		case 5:
-            		strengthText = 'Fort';
-            		color = 'success';
-            		break;
+    		if (score === 5) {
+        		strengthText = 'Fort ✓';
+        		color = 'success';
+        		isStrong = true;
+    		} else if (score === 4) {
+        		strengthText = 'Moyen';
+        		color = 'info';
+    		} else if (score === 3) {
+        		strengthText = 'Faible';
+        		color = 'warning';
+    		} else {
+        		strengthText = 'Très faible';
+        		color = 'danger';
     		}
 
     		feedback.innerHTML = `
-        		<div class="progress mt-1" style="height: 6px;">
+        		<div class="progress mt-1" style="height: 8px;">
             		<div class="progress-bar bg-${color}" style="width: ${score * 20}%"></div>
         		</div>
-        		<small class="text-${color}">${strengthText}</small>
+        		<small class="text-${color} fw-semibold d-block mt-1">${strengthText}</small>
     		`;
 
-    		return score >= 3; // Minimum "Moyen" requis
+    		return isStrong;
 	}
 
 	// Application sur le champ mot de passe
@@ -107,10 +102,17 @@
 
     		const strengthDiv = document.createElement('div');
     		strengthDiv.id = 'password-strength';
+    		strengthDiv.className = 'mt-2';
     		pwdInput.parentElement.appendChild(strengthDiv);
 
     		pwdInput.addEventListener('input', function() {
-        		checkPasswordStrength(this.value);
+        		const isStrong = checkPasswordStrength(this.value);
+        		
+        		const form = this.form;
+        		const submitBtn = form.querySelector('button[type="submit"]');
+        		if (submitBtn) {
+            		submitBtn.disabled = !isStrong;
+        		}
     		});
 	});
 </script>
