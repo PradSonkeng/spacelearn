@@ -113,6 +113,9 @@ a { text-decoration: none; }
     min-width: 0;
     display: flex;
     flex-direction: column;
+    
+    margin-left: 260px;           /* largeur de la sidebar */
+    transition: margin-left 0.3s ease;
 }
 
 .nl-topbar {
@@ -272,6 +275,10 @@ a { text-decoration: none; }
     }
     .nl-sidebar.show { transform: translateX(0); }
     .nl-main { padding: 1rem; }
+    
+    .nl-content {
+        margin-left: 0 !important;
+    }
 }
 
 /* Étoiles cliquables (formulaire d'avis) */
@@ -303,3 +310,14 @@ a { text-decoration: none; }
 .quiz-option.selected { border-color: var(--nl-primary); background: rgba(67,97,238,.08); }
 .quiz-option.correct { border-color: var(--nl-success); background: rgba(45,212,191,.12); }
 .quiz-option.incorrect { border-color: #ef4444; background: rgba(239,68,68,.1); }
+
+
+/* Quand la sidebar est affichée sur mobile */
+.nl-sidebar.show {
+    transform: translateX(0);
+}
+
+/* Amélioration du toggle */
+#sidebarToggle {
+    z-index: 1050;
+}

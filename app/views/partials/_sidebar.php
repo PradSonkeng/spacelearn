@@ -9,6 +9,9 @@ function nl_active(string $path, string $requestPath): string
 ?>
 <aside class="nl-sidebar" id="nlSidebar">
     <div class="brand">
+    		<button class="btn btn-link text-white d-lg-none position-absolute top-0 end-0 m-2" id="sidebarClose">
+    			<i class="fa-solid fa-times fa-xl"></i>
+		</button>
         <i class="fa-solid fa-graduation-cap"></i>
         <span><?= APP_NAME ?></span>
     </div>

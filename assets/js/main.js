@@ -39,6 +39,19 @@ document.addEventListener('DOMContentLoaded', function () {
             sidebar.classList.toggle('show');
         });
     }
+    const sidebarClose = document.getElementById('sidebarClose');
+    if (sidebarClose && sidebar) {
+        sidebarClose.addEventListener('click', function () {
+            sidebar.classList.remove('show');
+        });
+    }
+    document.addEventListener('click', function (e) {
+        if (window.innerWidth < 992) {
+            if (!sidebar.contains(e.target) && !sidebarToggle.contains(e.target)) {
+                sidebar.classList.remove('show');
+            }
+        }
+    });
 
     /* -----------------------------------------------------
        3. NOTIFICATIONS (AJAX polling)
