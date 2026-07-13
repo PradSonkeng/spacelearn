@@ -55,10 +55,12 @@ a { text-decoration: none; }
     background: var(--nl-sidebar-bg);
     color: var(--nl-sidebar-text);
     min-height: 100vh;
-    position: sticky;
+    position: fixed;
     top: 0;
     transition: transform .25s ease;
     z-index: 1030;
+    overflow-y: auto;
+    scrollbar-width: thin;
 }
 
 .nl-sidebar .brand {
