@@ -41,110 +41,112 @@
         </div>
 
         <div class="nl-card p-4">
-            <h5 class="fw-bold mb-3"><i class="fa-solid fa-shield-halved me-2 text-primary"></i>Sécurité</h5>
-            <form method="POST" action="<?= url('profile/changePassword') ?>">
-                <?= csrf_field() ?>
-                <div class="mb-3">
-                    <label class="form-label">Mot de passe actuel</label>
-                    <div class="input-group">
-                    		<input type="password" name="current_password" id="current-password" class="form-control" required>
-                    		<button class="btn btn-outline-secondary" type="button" id="toggle-current">
-                				<i class="fa-solid fa-eye" id="eye-current"></i>
-            				</button>
-            			</div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Nouveau mot de passe</label>
-                        <div class="input-group">
-                        		<input type="password" name="new_password" id="new-password" class="form-control" minlength="6" required>
-                        		<button class="btn btn-outline-secondary" type="button" id="toggle-new">
-                					<i class="fa-solid fa-eye" id="register-eye"></i>
-            					</button>
-            				</div>
-            				<div id="password-strength" class="mt-2"></div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Confirmer</label>
-                        <div class="input-group">
-                        		<input type="password" name="new_password_confirm" id="confirm-password" class="form-control" minlength="6" required>
-                        		<button class="btn btn-outline-secondary" type="button" id="toggle-register-password">
-                					<i class="fa-solid fa-eye" id="register-eye-confirm"></i>
-            					</button>
-            				</div>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-outline-primary"><i class="fa-solid fa-key me-2"></i>Changer le mot de passe</button>
-            </form>
+    <h5 class="fw-bold mb-3"><i class="fa-solid fa-shield-halved me-2 text-primary"></i>Sécurité</h5>
+    <form method="POST" action="<?= url('profile/changePassword') ?>">
+        <?= csrf_field() ?>
+        
+        <div class="mb-3">
+            <label class="form-label">Mot de passe actuel</label>
+            <div class="input-group">
+                <input type="password" name="current_password" id="current-password" class="form-control" required>
+                <button class="btn btn-outline-secondary" type="button" id="toggle-current">
+                    <i class="fa-solid fa-eye" id="eye-current"></i>
+                </button>
+            </div>
         </div>
-    </div>
-    <script>
-	function togglePassword(inputId, iconId) {
-    		const input = document.getElementById(inputId);
-    		const icon = document.getElementById(iconId);
-    		if (input.type === 'password') {
-        		input.type = 'text';
-        		icon.classList.replace('fa-eye', 'fa-eye-slash');
-    		} else {
-        		input.type = 'password';
-        		icon.classList.replace('fa-eye-slash', 'fa-eye');
-    		}
-	}
 
-	// Force du mot de passe
-	function checkPasswordStrength(password) {
-    		let score = 0;
-    		const feedback = document.getElementById('password-strength');
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Nouveau mot de passe</label>
+                <div class="input-group">
+                    <input type="password" name="new_password" id="new-password" class="form-control" minlength="8" required>
+                    <button class="btn btn-outline-secondary" type="button" id="toggle-new">
+                        <i class="fa-solid fa-eye" id="eye-new"></i>
+                    </button>
+                </div>
+                <div id="password-strength" class="mt-2"></div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Confirmer le nouveau mot de passe</label>
+                <div class="input-group">
+                    <input type="password" name="new_password_confirm" id="confirm-password" class="form-control" minlength="8" required>
+                    <button class="btn btn-outline-secondary" type="button" id="toggle-confirm">
+                        <i class="fa-solid fa-eye" id="eye-confirm"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
 
-    		if (password.length >= 8) score++;
-    		if (/[a-z]/.test(password)) score++;
-    		if (/[A-Z]/.test(password)) score++;
-    		if (/\d/.test(password)) score++;
-    		if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) score++;
-	
-    		let strengthText = '';
-    		let color = '';
-    		let isStrong = false;
+        <button type="submit" class="btn btn-outline-primary" id="submit-btn">
+            <i class="fa-solid fa-key me-2"></i>Changer le mot de passe
+        </button>
+    </form>
+</div>
 
-    		if (score === 5) {
-        		strengthText = 'Fort ✓';
-        		color = 'success';
-        		isStrong = true;
-    		} else if (score === 4) {
-        		strengthText = 'Moyen';
-        		color = 'info';
-    		} else if (score === 3) {
-        		strengthText = 'Faible';
-        		color = 'warning';
-    		} else {
-        		strengthText = 'Très faible';
-        		color = 'danger';
-    		}
+<script>
+// Toggle œil pour les 3 champs
+function togglePassword(inputId, iconId) {
+    const input = document.getElementById(inputId);
+    const icon = document.getElementById(iconId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.replace('fa-eye', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.replace('fa-eye-slash', 'fa-eye');
+    }
+}
 
-    		feedback.innerHTML = `
-        		<div class="progress mt-1" style="height: 8px;">
-            		<div class="progress-bar bg-${color}" style="width: ${score * 20}%"></div>
-        		</div>
-        		<small class="text-${color} fw-semibold d-block mt-1">${strengthText}</small>
-    		`;
-    		
-    		// Désactiver le bouton si pas assez fort
+// Force du mot de passe
+function checkPasswordStrength(password) {
+    let score = 0;
+    const feedback = document.getElementById('password-strength');
+
+    if (password.length >= 8) score++;
+    if (/[a-z]/.test(password)) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/\d/.test(password)) score++;
+    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) score++;
+
+    let text = 'Très faible';
+    let color = 'danger';
+    let isStrong = false;
+
+    if (score === 5) {
+        text = 'Fort ✓';
+        color = 'success';
+        isStrong = true;
+    } else if (score === 4) {
+        text = 'Moyen';
+        color = 'info';
+    } else if (score === 3) {
+        text = 'Faible';
+        color = 'warning';
+    }
+
+    feedback.innerHTML = `
+        <div class="progress mt-1" style="height: 8px;">
+            <div class="progress-bar bg-${color}" style="width: ${score * 20}%"></div>
+        </div>
+        <small class="text-${color} fw-semibold d-block mt-1">${text}</small>
+    `;
+
+    // Désactiver le bouton si pas assez fort
     document.getElementById('submit-btn').disabled = !isStrong;
+}
 
-	}
+// Initialisation
+document.addEventListener('DOMContentLoaded', function() {
+    // Toggle des 3 champs
+    document.getElementById('toggle-current').addEventListener('click', () => togglePassword('current-password', 'eye-current'));
+    document.getElementById('toggle-new').addEventListener('click', () => togglePassword('new-password', 'eye-new'));
+    document.getElementById('toggle-confirm').addEventListener('click', () => togglePassword('confirm-password', 'eye-confirm'));
 
-	// Initialisation
-	document.addEventListener('DOMContentLoaded', function() {
-    		// Toggle des 3 champs
-    		document.getElementById('toggle-current').addEventListener('click', () => togglePassword('current-password', 'eye-current'));
-    		document.getElementById('toggle-new').addEventListener('click', () => togglePassword('new-password', 'eye-new'));
-    		document.getElementById('toggle-confirm').addEventListener('click', () => togglePassword('confirm-password', 'eye-confirm'));
-
-    		// Jauge sur nouveau mot de passe
-    		const newPwd = document.getElementById('new-password');
-    		if (newPwd) {
-        		newPwd.addEventListener('input', () => checkPasswordStrength(newPwd.value));
-	    }
-	});
+    // Jauge sur nouveau mot de passe
+    const newPwd = document.getElementById('new-password');
+    if (newPwd) {
+        newPwd.addEventListener('input', () => checkPasswordStrength(newPwd.value));
+    }
+});
 </script>
 </div>
