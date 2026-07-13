@@ -54,7 +54,7 @@ a { text-decoration: none; }
     flex-shrink: 0;
     background: var(--nl-sidebar-bg);
     color: var(--nl-sidebar-text);
-    min-height: 100vh;
+    height: 100vh;
     position: sticky;
     top: 0;
     transition: transform .25s ease;
