@@ -8,7 +8,7 @@
     <div class="col-md-6 col-lg-4">
         <div class="nl-card h-100 p-4 text-center">
             <i class="fa-solid fa-certificate fa-3x text-primary mb-3"></i>
-            <h6 class="fw-bold"><?= e($cert['module_title']) ?></h6>
+            <h6 class="fw-bold"><?= e($cert['course_title']) ?></h6>
             <p class="text-muted small mb-2">Délivré le <?= format_date($cert['issued_at']) ?></p>
             <p class="mb-3"><code class="small"><?= e($cert['code']) ?></code></p>
             <a href="<?= url('certificate/show/' . $cert['id']) ?>" target="_blank" class="btn btn-primary btn-sm w-100">

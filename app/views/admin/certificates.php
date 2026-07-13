@@ -23,7 +23,7 @@
                         <div class="fw-semibold"><?= e($cert['student_name']) ?></div>
                         <div class="text-muted small"><?= e($cert['student_email']) ?></div>
                     </td>
-                    <td><?= e($cert['module_title']) ?></td>
+                    <td><?= e($cert['course_title']) ?></td>
                     <td class="text-muted small"><?= format_date($cert['issued_at']) ?></td>
                     <td class="text-end">
                         <a href="<?= url('certificate/show/' . $cert['id']) ?>" target="_blank" class="btn btn-sm btn-outline-primary">

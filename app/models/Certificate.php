@@ -6,9 +6,9 @@ class Certificate extends Model
     protected string $table = 'certificates';
 
     /** Délivre un certificat (s'il n'existe pas déjà) et retourne son enregistrement */
-    public function issue(int $studentId, int $moduleId): array
+    public function issue(int $studentId, int $courseId): array
     {
-        $existing = $this->findWhere(['student_id' => $studentId, 'module_id' => $moduleId]);
+        $existing = $this->findWhere(['student_id' => $studentId, 'course_id' => $courseId]);
         if ($existing) {
             return $existing;
         }
@@ -18,7 +18,7 @@ class Certificate extends Model
 
         $id = $this->create([
             'student_id' => $studentId,
-            'module_id'  => $moduleId,
+            'course_id'  => $courseId,
             'code'       => $code,
         ]);
 

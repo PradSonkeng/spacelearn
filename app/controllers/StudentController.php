@@ -265,7 +265,7 @@ class StudentController extends Controller
 
         $certificateIssued = null;
         if ($passed) {
-            $certificateIssued = $this->checkModuleCompletion($lesson['module_id'], current_user_id());
+            $certificateIssued = $this->checkCourseCompletion($lesson['course_id'], current_user_id());
         }
 
         $this->json([
@@ -303,29 +303,32 @@ class StudentController extends Controller
      *
      * @return array|null Détails du certificat délivré (ou null si rien de nouveau)
      */
-    private function checkModuleCompletion(int $moduleId, int $studentId): ?array
+    private function checkCourseCompletion(int $checkCourseCompletion, int $studentId): ?array
     {
-        $moduleModel = new ModuleModel();
+        $enrollmentModel = new Enrollment();
+        $enrollment = $enrollmentModel->findWhere(['student_id' => $studentId, 'course_id' => $courseId]);
 
-        if (!$moduleModel->isCompletedByStudent($moduleId, $studentId)) {
+        if (!$enrollment || $enrollment['progress_percent'] < 100) {
             return null;
         }
 
         $certificateModel = new Certificate();
-        $existing = $certificateModel->findWhere(['student_id' => $studentId, 'module_id' => $moduleId]);
+        $existing = $certificateModel->findWhere(['student_id' => $studentId, 'module_id' => $courseId]);
         if ($existing) {
             return null; // déjà délivré précédemment
         }
 
-        $module = $moduleModel->find($moduleId);
-        $certificate = $certificateModel->issue($studentId, $moduleId);
+        $courseModel = new Course();
+        $course = $courseModel->find($courseId);
+        
+        $certificate = $certificateModel->issue($studentId, $courseId);
 
-        notify($studentId, 'Félicitations ! Vous avez obtenu votre certificat pour le module "' . $module['title'] . '".', 'student/certificates');
+        notify($studentId, 'Félicitations ! Vous avez terminé le cours "' . $course['title'] . '" et reçu votre certificat.', 'student/certificates');
 
         return [
             'id' => $certificate['id'],
             'code' => $certificate['code'],
-            'module_title' => $module['title'],
+            'course_title' => $course['title'],
         ];
     }
 }
