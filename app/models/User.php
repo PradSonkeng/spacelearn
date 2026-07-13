@@ -39,7 +39,8 @@ class User extends Model
         		'password'           => password_hash($password, PASSWORD_BCRYPT),
         		'role'               => $role,
         		'verification_token' => $token,
-        		'email_verified'     => 0
+        		'email_verified'     => 0,
+        		'status'             => 'actif'
     		]);
 
     		return ['id' => $id, 'token' => $token];

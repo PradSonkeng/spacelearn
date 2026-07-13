@@ -183,7 +183,16 @@ class AuthController extends Controller
     /** Traitement de l'inscription */
     public function doRegister(): void
     {
-    		// Limitation : max 5 tentatives par IP par heure
+        $this->verifyCsrf();
+
+        $fullName = trim($_POST['full_name'] ?? '');
+        $email    = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $confirm  = $_POST['password_confirm'] ?? '';
+        $role     = $_POST['role'] ?? 'etudiant';
+
+
+		// Limitation : max 5 tentatives par IP par heure
 		$ip = $_SERVER['REMOTE_ADDR'];
 
 		$attemptCount = Database::query(
@@ -194,7 +203,8 @@ class AuthController extends Controller
 
 		if ($attemptCount >= 5) {
     			$this->setFlash('danger', 'Trop de tentatives d\'inscription. Veuillez réessayer dans 1 heure.');
-    		$this->redirect('auth/register');
+    			$this->redirect('auth/register');
+    			return;
 	}
 
 	// Enregistrer la tentative
@@ -202,16 +212,6 @@ class AuthController extends Controller
     		"INSERT INTO registration_attempts (ip_address, email) VALUES (:ip, :email)",
     		['ip' => $ip, 'email' => $email]
 	);
-	
-	
-        $this->verifyCsrf();
-
-        $fullName = trim($_POST['full_name'] ?? '');
-        $email    = trim($_POST['email'] ?? '');
-        $password = $_POST['password'] ?? '';
-        $confirm  = $_POST['password_confirm'] ?? '';
-        $role     = $_POST['role'] ?? 'etudiant';
-
         // Seuls ces deux rôles peuvent s'auto-inscrire
         if (!in_array($role, ['etudiant', 'enseignant'], true)) {
             $role = 'etudiant';
@@ -220,6 +220,7 @@ class AuthController extends Controller
         if ($fullName === '' || $email === '' || $password === '') {
             $this->setFlash('danger', 'Tous les champs sont obligatoires.');
             $this->redirect('auth/register');
+            return;
         }
 
         // Validation stricte du mot de passe (doit être FORT)
@@ -237,17 +238,20 @@ class AuthController extends Controller
         if ($password !== $confirm) {
             $this->setFlash('danger', 'Les mots de passe ne correspondent pas.');
             $this->redirect('auth/register');
+            return;
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->setFlash('danger', 'Adresse email invalide.');
             $this->redirect('auth/register');
+            return;
         }
 
         $userModel = new User();
         if ($userModel->emailExists($email)) {
             $this->setFlash('danger', 'Cet email est déjà utilisé.');
             $this->redirect('auth/register');
+            return;
         }
 
         $data = $userModel->registerWithVerification($fullName, $email, $password, $role);
