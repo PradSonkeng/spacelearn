@@ -26,12 +26,18 @@ $isCompleted = $progress && $progress['status'] === 'termine';
 <div class="row g-4">
     <div class="col-lg-9">
         <div class="nl-lesson-viewer mb-3">
-            <?php if ($lesson['type'] === 'pdf'): ?>
-                <iframe src="<?= upload($lesson['file_path']) ?>" title="<?= e($lesson['title']) ?>"></iframe>
-            <?php else: ?>
-                <video controls preload="metadata" src="<?= upload($lesson['file_path']) ?>"></video>
-            <?php endif; ?>
-        </div>
+    			<?php if ($lesson['is_external']): ?>
+        			<?php if (strpos($lesson['external_url'], 'youtube.com') !== false || strpos($lesson['external_url'], 'youtu.be') !== false): ?>
+            			<iframe width="100%" height="500" src="<?= str_replace('watch?v=', 'embed/', $lesson['external_url']) ?>" frameborder="0" allowfullscreen></iframe>
+        			<?php else: ?>
+            			<iframe src="<?= e($lesson['external_url']) ?>" width="100%" height="600" frameborder="0"></iframe>
+        			<?php endif; ?>
+    			<?php elseif ($lesson['type'] === 'pdf'): ?>
+        			<iframe src="<?= upload($lesson['file_path']) ?>" title="<?= e($lesson['title']) ?>"></iframe>
+    			<?php else: ?>
+        			<video controls preload="metadata" src="<?= upload($lesson['file_path']) ?>"></video>
+    		<?php endif; ?>
+			</div>
 
         <?php if (!empty($lesson['description'])): ?>
         <div class="nl-card p-3 mb-3">

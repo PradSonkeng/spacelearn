@@ -203,7 +203,8 @@ class TeacherController extends Controller
 
         $title = trim($_POST['title'] ?? '');
         $description = trim($_POST['description'] ?? '');
-        $type = ($_POST['type'] ?? 'pdf') === 'video' ? 'video' : 'pdf';
+        $type = ($_POST['type'] ?? 'pdf');
+    		$isExternal = $type === 'external';
 
         if ($title === '') {
             $this->setFlash('danger', 'Le titre de la leçon est obligatoire.');
@@ -214,25 +215,36 @@ class TeacherController extends Controller
             'course_id' => $courseId,
             'title' => $title,
             'description' => $description,
-            'type' => $type,
+            'type' => $isExternal ? 'external' : $type,
+            'is_external' => $isExternal ? 1 : 0,
         ];
+        
+        
+        if ($isExternal) {
+        		$externalUrl = trim($_POST['external_url'] ?? '');
+        		if (empty($externalUrl) || !filter_var($externalUrl, FILTER_VALIDATE_URL)) {
+            		$this->setFlash('danger', 'URL externe invalide.');
+            		$this->redirect(...);
+       		}
+        		$data['external_url'] = $externalUrl;
+    		} else {
+        		if (!empty($_FILES['file']['name'])) {
+            		$allowed = $type === 'pdf' ? ['pdf'] : ['mp4', 'webm', 'ogg'];
+            		$maxSize = $type === 'pdf' ? MAX_PDF_SIZE : MAX_VIDEO_SIZE;
+            		$path = handle_upload($_FILES['file'], 'lessons', $allowed, $maxSize);
 
-        if (!empty($_FILES['file']['name'])) {
-            $allowed = $type === 'pdf' ? ['pdf'] : ['mp4', 'webm', 'ogg'];
-            $maxSize = $type === 'pdf' ? MAX_PDF_SIZE : MAX_VIDEO_SIZE;
-            $path = handle_upload($_FILES['file'], 'lessons', $allowed, $maxSize);
-
-            if ($path === false) {
-                $this->setFlash('danger', 'Fichier invalide. ' . ($type === 'pdf'
-                    ? 'Formats acceptés : PDF (50 Mo max).'
-                    : 'Formats acceptés : mp4, webm, ogg (300 Mo max).'));
-                $this->redirect("teacher/lessonForm/{$courseId}" . ($id > 0 ? "/{$id}" : ''));
+            		if ($path === false) {
+                		$this->setFlash('danger', 'Fichier invalide. ' . ($type === 'pdf'
+                    		? 'Formats acceptés : PDF (50 Mo max).'
+                    		: 'Formats acceptés : mp4, webm, ogg (300 Mo max).'));
+                		$this->redirect("teacher/lessonForm/{$courseId}" . ($id > 0 ? "/{$id}" : ''));
             }
-            $data['file_path'] = $path;
-        } elseif ($id === 0) {
-            $this->setFlash('danger', 'Veuillez sélectionner un fichier (PDF ou vidéo).');
-            $this->redirect("teacher/lessonForm/{$courseId}");
-        }
+            		$data['file_path'] = $path;
+        		} elseif ($id === 0) {
+            		$this->setFlash('danger', 'Veuillez sélectionner un fichier (PDF ou vidéo).');
+            		$this->redirect("teacher/lessonForm/{$courseId}");
+        		}
+    		}
 
         if ($id > 0) {
             $lessonModel->update($id, $data);

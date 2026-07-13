@@ -24,33 +24,38 @@
                     <textarea name="description" class="form-control" rows="3" placeholder="Résumé du contenu de cette leçon..."><?= e($lesson['description'] ?? '') ?></textarea>
                 </div>
 
-                <div class="mb-4">
-                    <label class="form-label d-block">Type de contenu <span class="text-danger">*</span></label>
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <input type="radio" class="btn-check" name="type" id="typePdf" value="pdf" <?= (!isset($lesson['type']) || $lesson['type'] === 'pdf') ? 'checked' : '' ?> onchange="toggleFileHint()">
-                            <label class="btn btn-outline-primary w-100" for="typePdf"><i class="fa-solid fa-file-pdf me-2"></i>Document PDF</label>
-                        </div>
-                        <div class="col-6">
-                            <input type="radio" class="btn-check" name="type" id="typeVideo" value="video" <?= (isset($lesson['type']) && $lesson['type'] === 'video') ? 'checked' : '' ?> onchange="toggleFileHint()">
-                            <label class="btn btn-outline-primary w-100" for="typeVideo"><i class="fa-solid fa-circle-play me-2"></i>Vidéo</label>
-                        </div>
-                    </div>
+                <div class="mb-3">
+    					<label class="form-label">Type de contenu</label>
+    					<select name="type" class="form-select" id="lessonType" onchange="toggleLessonType()">
+        					<option value="pdf">Document PDF (upload)</option>
+        					<option value="video">Vidéo (upload)</option>
+        					<option value="external">Lien externe (YouTube, PDF en ligne...)</option>
+    					</select>
+				</div>
+				
+				<div class="mb-3" id="externalGroup" style="display: <?= !empty($lesson['is_external']) ? 'block' : 'none' ?>;">
+                    <label class="form-label">URL externe <span class="text-danger">*</span></label>
+                    <input type="url" name="external_url" class="form-control" 
+                           value="<?= e($lesson['external_url'] ?? '') ?>" 
+                           placeholder="https://www.youtube.com/watch?v=... ou lien PDF public">
+                    <small class="text-muted">YouTube, Vimeo, Google Drive, PDF hébergé en ligne, etc.</small>
                 </div>
-
-                <div class="mb-4">
+                
+                <div class="mb-3" id="fileGroup" style="display: <?= empty($lesson['is_external']) ? 'block' : 'none' ?>;">
                     <label class="form-label">Fichier <?= $lesson ? '' : '<span class="text-danger">*</span>' ?></label>
-                    <input type="file" name="file" class="form-control" <?= $lesson ? '' : 'required' ?>>
-                    <small class="text-muted" id="fileHint">PDF : 50 Mo max.</small>
+                    <input type="file" name="file" class="form-control">
+                    
                     <?php if (!empty($lesson['file_path'])): ?>
-                        <div class="mt-2">
-                            <span class="text-muted small">Fichier actuel :</span>
-                            <a href="<?= upload($lesson['file_path']) ?>" target="_blank"><?= e(basename($lesson['file_path'])) ?></a>
-                            <br><small class="text-muted">Laissez ce champ vide pour conserver le fichier actuel.</small>
+                        <div class="mt-2 small">
+                            <span class="text-muted">Fichier actuel :</span> 
+                            <a href="<?= upload($lesson['file_path']) ?>" target="_blank" class="text-decoration-underline">
+                                <?= e(basename($lesson['file_path'])) ?>
+                            </a>
+                            <br><small class="text-muted">Laissez vide pour conserver le fichier actuel.</small>
                         </div>
                     <?php endif; ?>
                 </div>
-
+                
                 <div class="d-flex gap-2">
                     <button type="submit" class="btn btn-primary"><i class="fa-solid fa-floppy-disk me-2"></i>Enregistrer</button>
                     <a href="<?= url('teacher/courseManage/' . $course['id']) ?>" class="btn btn-light">Annuler</a>
@@ -58,16 +63,25 @@
             </form>
         </div>
     </div>
+    <script>
+function toggleLessonType() {
+    const type = document.getElementById('lessonType').value;
+    const externalGroup = document.getElementById('externalGroup');
+    const fileGroup = document.getElementById('fileGroup');
+
+    if (type === 'external') {
+        externalGroup.style.display = 'block';
+        fileGroup.style.display = 'none';
+    } else {
+        externalGroup.style.display = 'none';
+        fileGroup.style.display = 'block';
+    }
+}
+
+// Initialisation si on édite une leçon externe
+document.addEventListener('DOMContentLoaded', function() {
+    toggleLessonType();
+});
+</script>
 </div>
 
-<?php
-$inlineJs = "
-function toggleFileHint() {
-    const isVideo = document.getElementById('typeVideo').checked;
-    document.getElementById('fileHint').textContent = isVideo
-        ? 'Vidéo : formats mp4, webm, ogg — 300 Mo max.'
-        : 'PDF : 50 Mo max.';
-}
-toggleFileHint();
-";
-?>
