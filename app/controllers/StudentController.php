@@ -313,7 +313,7 @@ class StudentController extends Controller
         }
 
         $certificateModel = new Certificate();
-        $existing = $certificateModel->findWhere(['student_id' => $studentId, 'module_id' => $courseId]);
+        $existing = $certificateModel->findWhere(['student_id' => $studentId, 'course_id' => $courseId]);
         if ($existing) {
             return null; // déjà délivré précédemment
         }

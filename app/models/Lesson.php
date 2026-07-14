@@ -9,7 +9,8 @@ class Lesson extends Model
     public function byCourse(int $courseId): array
     {
         $sql = "SELECT l.*,
-                       ev.id AS evaluation_id, ev.title AS evaluation_title, ev.passing_score
+                       ev.id AS evaluation_id, ev.title AS evaluation_title, ev.passing_score,
+               			l.is_external, l.external_url
                 FROM lessons l
                 LEFT JOIN evaluations ev ON ev.lesson_id = l.id
                 WHERE l.course_id = :cid
@@ -31,7 +32,8 @@ class Lesson extends Model
     public function details(int $lessonId): array|false
     {
         $sql = "SELECT l.*, c.id AS course_id, c.title AS course_title, c.teacher_id, c.module_id,
-                       ev.id AS evaluation_id, ev.title AS evaluation_title, ev.passing_score
+                       ev.id AS evaluation_id, ev.title AS evaluation_title, ev.passing_score,
+               			l.is_external, l.external_url
                 FROM lessons l
                 JOIN courses c ON c.id = l.course_id
                 LEFT JOIN evaluations ev ON ev.lesson_id = l.id
