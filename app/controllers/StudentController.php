@@ -51,26 +51,27 @@ class StudentController extends Controller
     // CATALOGUE
     // =====================================================
     public function catalog(): void
-    {
-        $search = trim($_GET['q'] ?? '');
-        $moduleId = !empty($_GET['module']) ? (int)$_GET['module'] : null;
+{
+    $search = trim($_GET['q'] ?? '');
+    $moduleId = !empty($_GET['module']) ? (int)$_GET['module'] : null;
 
-        $courseModel = new Course();
-        $courses = $courseModel->catalog($search, $moduleId);
-        $modules = (new ModuleModel())->all('title ASC');
+    $courseModel = new Course();
+    $courses = $courseModel->catalog($search, $moduleId);
+    
+    $modules = (new ModuleModel())->all('title ASC');
 
-        $enrollmentModel = new Enrollment();
-        $enrolledIds = array_column($enrollmentModel->byStudent(current_user_id()), 'course_id');
+    $enrollmentModel = new Enrollment();
+    $enrolledIds = array_column($enrollmentModel->byStudent(current_user_id()), 'course_id');
 
-        $this->view('student/catalog', [
-            'title' => 'Catalogue des cours',
-            'courses' => $courses,
-            'modules' => $modules,
-            'enrolledIds' => $enrolledIds,
-            'search' => $search,
-            'selectedModule' => $moduleId,
-        ]);
-    }
+    $this->view('student/catalog', [
+        'title' => 'Catalogue des cours',
+        'courses' => $courses,
+        'modules' => $modules,
+        'enrolledIds' => $enrolledIds,
+        'search' => $search,
+        'selectedModule' => $moduleId,
+    ]);
+}
 
     // =====================================================
     // DÉTAIL D'UN COURS

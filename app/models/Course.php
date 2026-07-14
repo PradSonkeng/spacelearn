@@ -35,29 +35,34 @@ class Course extends Model
 
     /** Catalogue public : cours publiés, avec filtres optionnels */
     public function catalog(string $search = '', ?int $moduleId = null): array
-    {
-        $sql = "SELECT c.*, m.title AS module_title, u.full_name AS teacher_name,
-                       (SELECT COUNT(*) FROM lessons l WHERE l.course_id = c.id) AS nb_lessons,
-                       (SELECT COUNT(*) FROM enrollments e WHERE e.course_id = c.id) AS nb_students,
-                       (SELECT COALESCE(AVG(r.rating), 0) FROM reviews r WHERE r.course_id = c.id) AS avg_rating
-                FROM courses c
-                JOIN modules m ON m.id = c.module_id
-                JOIN users u ON u.id = c.teacher_id
-                WHERE c.status = 'publie'";
+{
+    $sql = "SELECT c.*, 
+                   m.title AS module_title, 
+                   u.full_name AS teacher_name,
+                   (SELECT COUNT(*) FROM lessons l WHERE l.course_id = c.id) AS nb_lessons,
+                   (SELECT COUNT(*) FROM enrollments e WHERE e.course_id = c.id) AS nb_students,
+                   (SELECT COALESCE(AVG(r.rating), 0) FROM reviews r WHERE r.course_id = c.id) AS avg_rating
+            FROM courses c
+            JOIN modules m ON m.id = c.module_id
+            JOIN users u ON u.id = c.teacher_id
+            WHERE c.status = 'publie'";
 
-        $params = [];
-        if ($search !== '') {
-            $sql .= " AND (c.title LIKE :search OR c.description LIKE :search OR m.title LIKE :search)";
-            $params['search'] = '%' . $search . '%';
-        }
-        if ($moduleId !== null) {
-            $sql .= " AND c.module_id = :module_id";
-            $params['module_id'] = $moduleId;
-        }
-        $sql .= " ORDER BY c.created_at DESC";
+    $params = [];
 
-        return Database::query($sql, $params)->fetchAll();
+    if ($search !== '') {
+        $sql .= " AND (c.title LIKE :search OR c.description LIKE :search OR m.title LIKE :search)";
+        $params['search'] = '%' . $search . '%';
     }
+
+    if ($moduleId !== null) {
+        $sql .= " AND c.module_id = :module_id";
+        $params['module_id'] = $moduleId;
+    }
+
+    $sql .= " ORDER BY c.created_at DESC";
+
+    return Database::query($sql, $params)->fetchAll();
+}
 
     /** Vérifie si un cours appartient bien à un enseignant donné (sécurité) */
     public function belongsToTeacher(int $courseId, int $teacherId): bool
