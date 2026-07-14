@@ -28,7 +28,7 @@ class Certificate extends Model
     /** Certificats d'un étudiant avec infos du cours */
     public function byStudent(int $studentId): array
     {
-        $sql = "SELECT c.*, m.title AS module_title
+        $sql = "SELECT c.*, co.title AS course_title
                 FROM certificates c
                 JOIN courses co ON co.id = c.course_id
                 WHERE c.student_id = :sid
@@ -39,7 +39,7 @@ class Certificate extends Model
     /** Vérifie l'authenticité d'un certificat à partir de son code */
     public function verify(string $code): array|false
     {
-        $sql = "SELECT c.*, m.title AS module_title, u.full_name AS student_name
+        $sql = "SELECT c.*, co.title AS course_title, u.full_name AS student_name
                 FROM certificates c
                 JOIN courses co ON co.id = c.course_id
                 JOIN users u ON u.id = c.student_id
