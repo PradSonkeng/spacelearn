@@ -25,12 +25,12 @@ class Certificate extends Model
         return $this->find($id);
     }
 
-    /** Certificats d'un étudiant avec infos du module */
+    /** Certificats d'un étudiant avec infos du cours */
     public function byStudent(int $studentId): array
     {
         $sql = "SELECT c.*, m.title AS module_title
                 FROM certificates c
-                JOIN modules m ON m.id = c.module_id
+                JOIN courses co ON co.id = c.course_id
                 WHERE c.student_id = :sid
                 ORDER BY c.issued_at DESC";
         return Database::query($sql, ['sid' => $studentId])->fetchAll();
@@ -41,7 +41,7 @@ class Certificate extends Model
     {
         $sql = "SELECT c.*, m.title AS module_title, u.full_name AS student_name
                 FROM certificates c
-                JOIN modules m ON m.id = c.module_id
+                JOIN courses co ON co.id = c.course_id
                 JOIN users u ON u.id = c.student_id
                 WHERE c.code = :code";
         return Database::query($sql, ['code' => $code])->fetch();
